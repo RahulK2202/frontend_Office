@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 
 
 
@@ -13,17 +14,18 @@ function UserFooter() {
                     <h3 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">OfficeXpert</h3>
                     <ul className="text-gray-500 dark:text-gray-400">
                         <li className="mb-4">
-                            <a href="#" className=" hover:underline">Hall Booking</a>
+                            <Link to="/addmeeting" className=" hover:underline">Hall Booking</Link>
                         </li>
                         <li className="mb-4">
-                            <a href="#" className="hover:underline">Visitor Management</a>
+                            <Link to="/visitorpage" className="hover:underline">Visitor Management</Link>
                         </li>
                         <li className="mb-4">
-                            <a href="#" className="hover:underline">Requests & Complaints</a>
+                            <Link to="/usercomplaints"  className="hover:underline">Requests & Complaints</Link>
                         </li>
-                        <li className="mb-4">
+                        
+                        {/* <li className="mb-4">
                             <a href="#" className="hover:underline">Project Management</a>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
                 <div>
