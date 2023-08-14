@@ -4,7 +4,7 @@ import { fetchMeetingData } from '../../data/meetingApi';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { BACKEND_BASE_URL } from '../../API/Api';
-
+import Swal from 'sweetalert2';
 
 function MeetingTable() {
   const [meeting, setMeeting] = useState([]);
@@ -19,17 +19,43 @@ function MeetingTable() {
     fetchData();
   }, []);
 
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await axios.delete(`${BACKEND_BASE_URL}/meeting/meetings/${id}/`);
+  //     console.log('Meeting deleted successfully');
+  
+  //     // Remove the deleted meeting from the state
+  //     setMeeting((prevMeeting) => prevMeeting.filter((meeting) => meeting.id !== id));
+  //   } catch (error) {
+  //     console.error('Error deleting meeting:', error);
+  //   }
+  // };
+
+
+
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${BACKEND_BASE_URL}/meeting/meetings/${id}/`);
-      console.log('Meeting deleted successfully');
+      // Show a confirmation dialog
+      const result = await Swal.fire({
+        title: 'Do you really want to delete this meeting?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel',
+      });
   
-      // Remove the deleted meeting from the state
-      setMeeting((prevMeeting) => prevMeeting.filter((meeting) => meeting.id !== id));
+      if (result.isConfirmed) {
+        await axios.delete(`${BACKEND_BASE_URL}/meeting/meetings/${id}/`);
+        console.log('Meeting deleted successfully');
+  
+        // Remove the deleted meeting from the state
+        setMeeting((prevMeeting) => prevMeeting.filter((meeting) => meeting.id !== id));
+      }
     } catch (error) {
       console.error('Error deleting meeting:', error);
     }
   };
+
 
   return (
 
