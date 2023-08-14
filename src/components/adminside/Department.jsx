@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Dumy from "../../pages/Dumy";
 import { BACKEND_BASE_URL } from "../../API/Api";
+import Swal from 'sweetalert2';
 
 function Department() {
   const [department, setDepartment] = useState([]);
@@ -24,13 +25,36 @@ function Department() {
     setDepartment([...department, newDepartment]);
   };
 
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await axios.delete(`${BACKEND_BASE_URL}/user/departments/${id}/`);
+  //     console.log('Department deleted successfully');
+  
+  //     // Remove the deleted department from the state
+  //     setDepartment((prevDepartments) => prevDepartments.filter(dept => dept.id !== id));
+  //   } catch (error) {
+  //     console.error('Error deleting department:', error);
+  //   }
+  // };
+
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${BACKEND_BASE_URL}/user/departments/${id}/`);
-      console.log('Department deleted successfully');
+      // Show a confirmation dialog
+      const result = await Swal.fire({
+        title: 'Do you really want to delete this department?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel',
+      });
   
-      // Remove the deleted department from the state
-      setDepartment((prevDepartments) => prevDepartments.filter(dept => dept.id !== id));
+      if (result.isConfirmed) {
+        await axios.delete(`${BACKEND_BASE_URL}/user/departments/${id}/`);
+        console.log('Department deleted successfully');
+  
+        // Remove the deleted department from the state
+        setDepartment((prevDepartments) => prevDepartments.filter(dept => dept.id !== id));
+      }
     } catch (error) {
       console.error('Error deleting department:', error);
     }
