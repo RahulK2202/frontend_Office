@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 import Announcements from './Announcements';
 import { fetchAnnouncements, addAnnouncement,deleteAnnouncement } from '../../data/announcementApi';
@@ -31,18 +32,38 @@ function AnnouncementTable() {
     }
   };
 
-  const handleDeleteAnnouncement = async (announcementId) => {
+ 
+  
+
+
+
+  const handleDeleteAnnouncement= async (announcementId) => {
     try {
-      await deleteAnnouncement(announcementId);
-      console.log('Announcement deleted successfully');
-      setAnnouncements((prevAnnouncements) =>
-        prevAnnouncements.filter((announcement) => announcement.id !== announcementId)
-      );
+      // Show a confirmation dialog
+      const result = await Swal.fire({
+        title: 'Do you really want to delete this announcement?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel',
+      });
+  
+      if (result.isConfirmed) {
+        await deleteAnnouncement(announcementId);
+        console.log('Announcement deleted successfully');
+        setAnnouncements((prevAnnouncements) =>
+          prevAnnouncements.filter((announcement) => announcement.id !== announcementId)
+        );
+      }
     } catch (error) {
       console.error('Error deleting announcement:', error);
     }
   };
   
+
+
+
+
 
 
   return (
