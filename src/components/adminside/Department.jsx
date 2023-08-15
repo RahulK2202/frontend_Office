@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import Dumy from "../../pages/Dumy";
 import { BACKEND_BASE_URL } from "../../API/Api";
 import Swal from 'sweetalert2';
+import Pagination from '../../Pagination/Pagination'; // Make sure to adjust the import path
 
 function Department() {
   const [department, setDepartment] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const itemsPerPage = 3;
 
   useEffect(() => {
     fetchDepartments();
@@ -25,21 +27,8 @@ function Department() {
     setDepartment([...department, newDepartment]);
   };
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     await axios.delete(`${BACKEND_BASE_URL}/user/departments/${id}/`);
-  //     console.log('Department deleted successfully');
-  
-  //     // Remove the deleted department from the state
-  //     setDepartment((prevDepartments) => prevDepartments.filter(dept => dept.id !== id));
-  //   } catch (error) {
-  //     console.error('Error deleting department:', error);
-  //   }
-  // };
-
   const handleDelete = async (id) => {
     try {
-      // Show a confirmation dialog
       const result = await Swal.fire({
         title: 'Do you really want to delete this department?',
         icon: 'warning',
@@ -59,12 +48,25 @@ function Department() {
       console.error('Error deleting department:', error);
     }
   };
-  
 
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+    setCurrentPage(0);
+  };
 
+  const filteredDepartments = department.filter((dept) =>
+    dept.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  
+  const pageCount = Math.ceil(filteredDepartments.length / itemsPerPage);
+  const displayedDepartments = filteredDepartments.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
 
   return (
     <div>
@@ -73,73 +75,44 @@ function Department() {
           <div className="bg-gray-200 px-2 py-3 border-solid border-gray-200 border-b">
             Department List
           </div>
-          <td>
-            <br />
-            <Dumy onDepartmentAdded={handleDepartmentAdded} />
-          </td>
-          <br />
+          <div className="mb-4 mt-2 px-2">
+            <input
+              type="text"
+              placeholder="Search by Department Name"
+              value={searchQuery}
+              onChange={handleSearch}
+              className="px-4 py-2 border rounded w-full"
+            />
+          </div>
           <div className="p-3">
-            <table className="table-responsive w-full rounded">
+            <table className="table-responsive w-full">
               <thead>
                 <tr>
-                  <th className="border  px-4 py-2">Id</th>
+                  <th className="border px-4 py-2">Id</th>
                   <th className="border w-1/2 px-4 py-2">Department Name</th>
                   <th className="border w-1/2 px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td colSpan="2"></td>
-                </tr>
-
-                {department.map((dept) => (
+                {displayedDepartments.map((dept) => (
                   <tr key={dept.id}>
                     <td className="border px-4 py-2">{dept.id}</td>
                     <td className="border px-4 py-2">{dept.name}</td>
-                    {/* <td className="border px-4 py-2">
-                      <Link
-                        to={`/editemployee/${dept.id}`}
-                        className="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </Link>
+                    <td className="border px-4 py-2 flex">
                       <button
+                        onClick={() => handleDelete(dept.id)}
                         className="bg-red-500 cursor-pointer rounded p-1 mx-1 text-white"
-                        onClick={() => handleDepartmentDeleted(dept.id)}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
-                    </td> */}
-
-<td className="border px-4 py-2 flex">
-                    
-
-{/* <Link
-  to={{
-    pathname: `/editdepartment/${dept.id}`,
-    state: { departmentId: dept.id, departmentName: dept.name },
-  }}
-  className="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white"
->
-  <i className="fas fa-edit"></i>
-</Link> */}
-
-
-
-  <button
-      onClick={() => handleDelete(dept.id)}
-      className="bg-red-500 cursor-pointer rounded p-1 mx-1 text-white"
-    >
-      <i className="fas fa-trash"></i>
-    </button>
-
-
-    </td>
-
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="flex justify-center mt-4">
+            <Pagination pageCount={pageCount} onPageChange={handlePageChange} />
           </div>
         </div>
       </div>
