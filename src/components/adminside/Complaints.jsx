@@ -7,7 +7,8 @@ import Pagination from '../../Pagination/Pagination'; // Make sure to adjust the
 function Complaints() {
   const [complaints, setComplaints] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 3;
+  const [searchQuery, setSearchQuery] = useState('');
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchComplaints();
@@ -47,19 +48,38 @@ function Complaints() {
     }
   };
 
-  const pageCount = Math.ceil(complaints.length / itemsPerPage);
-  const displayedComplaints = complaints.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+    setCurrentPage(0);
+  };
+
+  const filteredComplaints = complaints.filter((complaint) =>
+    complaint.employee.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const pageCount = Math.ceil(filteredComplaints.length / itemsPerPage);
+  const displayedComplaints = filteredComplaints.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Complaints List</h1>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by Employee Name"
+          value={searchQuery}
+          onChange={handleSearch}
+          className="px-4 py-2 border rounded w-full"
+        />
+      </div>
 
       <div className="overflow-x-auto">
         <table className="table-auto w-full">
@@ -68,7 +88,7 @@ function Complaints() {
               <th className="px-4 py-2 font-semibold text-gray-800">id</th>
               <th className="px-4 py-2 font-semibold text-gray-800">Employee Name</th>
               <th className="px-4 py-2 font-semibold text-gray-800">Email</th>
-              <th className="px-4 py-2 font-semibold text-gray-800">description</th>
+              <th className="px-4 py-2 font-semibold text-gray-800">Description</th>
               <th className="px-4 py-2 font-semibold text-gray-800">Status</th>
             </tr>
           </thead>
